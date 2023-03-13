@@ -34,7 +34,7 @@
 .spaceAge {
   font-family: 'spaceAge', sans-serif;
   font-size: 20px;
-  color: #fe9e1b;
+  color: #fffed1;
 }
 
 .spaceAgeBig{
@@ -47,6 +47,7 @@
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
   transition: 0.3s;
   width: 40%;
+  padding: 1%;
 }
 
 .card:hover {
@@ -59,4 +60,13 @@
   border-color: white;
   border-style: solid;
   border-radius: 0.3rem;
+}
+
+
+.titleStyle{
+  text-align: center;
+}
+
+.cardTitleStyle{
+  text-align: center;
 }

@@ -9,7 +9,43 @@ import React, { useState, useEffect } from 'react';
 
 const inter = Inter({ subsets: ['latin'] })
 
-function spacexApi(){
+//This component takes in a number from the user. This number is than passed to /api/spacex-api-req-history.js end point. 
+//This will than send a request to https://api.spacexdata.com/v3/launches/${id}
+function spaceXHistoricalApiComp() {
+  //set the launch ID and launchData to "" and null to be used later
+  const [launchId, setLaunchId] = useState('');
+  const [launchData, setLaunchData] = useState(null);
+
+  //Async event handler that will be called in <input>
+  async function handleSubmit(event) {
+    event.preventDefault();
+    const response = await fetch(`/api/spacex-api-req-history?id=${launchId}`);
+    const data = await response.json();
+    setLaunchData(data);
+  }
+
+  return (
+    <div className={styleSheet.card}>
+      <div className={styleSheet.container}>
+        <form onSubmit={handleSubmit}>
+          <h1 className={`${styleSheet.NasaFont} ${styleSheet.cardTitleStyle}`}>{launchData && (
+            <pre>{launchData.mission_name}</pre>
+          )}</h1>
+          <label className={styleSheet.spaceAge}>
+            Search For Flight Using Flight Number:
+            <input type="number" value={launchId} onChange={(event) => setLaunchId(event.target.value)} />
+          </label>
+          <button type="submit">Submit</button>
+        </form>
+        {launchData && (
+          <pre className={styleSheet.spaceAge}>{JSON.stringify(launchData, null, 2)}</pre>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function spacexApi() {
   const [data, setData] = useState(null);
 
   useEffect(() => {
@@ -24,27 +60,27 @@ function spacexApi(){
   }, []);
 
   //Check the Fail State of the vehicle
-  function checkFailState(failData){
+  function checkFailState(failData) {
     let failState = ''
-    if( Object.keys(failData).length == 0){
+    if (Object.keys(failData).length == 0) {
       failState = "No Fails Were Reported";
-    }else{
+    } else {
       failState = failData;
     }
     return failState;
   }
   //Check if inaugural flight of core
-  function checkFirstFlight(flightNumber){
+  function checkFirstFlight(flightNumber) {
     let flightCheckReturn = ""
-    if(flightNumber == 1){
+    if (flightNumber == 1) {
       flightCheckReturn = "1 <Inaugural Flight of Core>";
-    }else{
+    } else {
       flightCheckReturn = flightNumber;
     }
     return flightCheckReturn;
   }
 
-  function makeUpperCase(name){
+  function makeUpperCase(name) {
     return name.toUpperCase();
   }
 
@@ -53,16 +89,17 @@ function spacexApi(){
       {data ? (
         <div className={styleSheet.card}>
           <div className={styleSheet.container}>
-          <h1 className={styleSheet.NasaFont}>{makeUpperCase(data.name)}</h1>
-          <p className={styleSheet.spaceAge}>Flight Number : {data.flight_number}</p>
-          <p className={styleSheet.spaceAge}>Core Number Of Flights : {checkFirstFlight(data.cores[0].flight)}</p>
-          <p className={styleSheet.spaceAge}>Rocket ID : {data.rocket}</p>
-          <p className={styleSheet.spaceAge}>Success : {data.success.toString()}</p>
-          <p className={styleSheet.spaceAge}>Landing Attempt : {data.cores[0].landing_attempt.toString()}</p>
-          <p className={styleSheet.spaceAge}>Landing Success: {data.cores[0].landing_success.toString()}</p>
-          <p className={styleSheet.spaceAge}>Date Of Launch : {data.date_utc.toString()}</p>
-          <p className={styleSheet.spaceAge}>Fail States : {checkFailState(data.failures)}</p>
-          <p className={styleSheet.spaceAge}>Video: <a href='https://youtu.be/5EwW8ZkArL4' target="_blank">Click To View Web Cast</a></p>
+            <h1 className={`${styleSheet.NasaFont} ${styleSheet.cardTitleStyle}`}>{makeUpperCase(data.name)}</h1>
+            <p className={styleSheet.spaceAge}>Latest Flight</p>
+            <p className={styleSheet.spaceAge}>Flight Number : {data.flight_number}</p>
+            <p className={styleSheet.spaceAge}>Core Number Of Flights : {checkFirstFlight(data.cores[0].flight)}</p>
+            <p className={styleSheet.spaceAge}>Rocket ID : {data.rocket}</p>
+            <p className={styleSheet.spaceAge}>Success : {data.success.toString()}</p>
+            <p className={styleSheet.spaceAge}>Landing Attempt : {data.cores[0].landing_attempt.toString()}</p>
+            <p className={styleSheet.spaceAge}>Landing Success: {data.cores[0].landing_success.toString()}</p>
+            <p className={styleSheet.spaceAge}>Date Of Launch : {data.date_utc.toString()}</p>
+            <p className={styleSheet.spaceAge}>Fail States : {checkFailState(data.failures)}</p>
+            <p className={styleSheet.spaceAge}>Video: <a href='https://youtu.be/5EwW8ZkArL4' target="_blank">Click To View Web Cast</a></p>
           </div>
         </div>
       ) : (
@@ -72,7 +109,7 @@ function spacexApi(){
   );
 }
 
-function Testing(){
+function Testing() {
   const [data, setData] = useState(null);
 
   useEffect(() => {
@@ -89,7 +126,7 @@ function Testing(){
     <div>
       {data ? (
         <div>
-          <h1 className={styleSheet.spaceAgeBig}>{data.name}</h1>
+          <h1 className={`${styleSheet.spaceAgeBig} ${styleSheet.titleStyle}`}>{data.name}</h1>
         </div>
       ) : (
         <p>Loading...</p>
@@ -104,6 +141,7 @@ export default function Home() {
     <div>
       {Testing()}
       {spacexApi()}
+      {spaceXHistoricalApiComp()}
     </div>
   )
 }
