@@ -9,6 +9,47 @@ import React, { useState, useEffect } from 'react';
 
 const inter = Inter({ subsets: ['latin'] })
 
+function postOwnRocketEntryToAWS() {
+  const [nameOfRocket, setNameOfRocket] = useState('');
+  const [nameOfPayload, setNameOfPayload] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+
+    const formData = {
+      nameOfRocket,
+      nameOfPayload
+    }
+
+    const response = await fetch('/api/spacex-user-created-rocket', {
+      method: "POST",
+      body: JSON.stringify(formData),
+    })
+    if (response.status == 200) {
+      console.log('Post Success')
+    } else {
+      console.log('Post Faliure')
+    }
+  }
+  return (
+    <form onSubmit={handleSubmit}>
+      <label>
+        Enter Name Of Rocket
+        <input type='text' value={nameOfRocket} onChange={(e) => setNameOfRocket(e.target.value)} />
+      </label>
+      <label>
+        Enter Name Of Payload
+        <input type='text' value={nameOfPayload} onChange={(e) => setNameOfPayload(e.target.value)} />
+      </label>
+      <label>
+        Submit
+        <button type='submit'>Submit</button>
+      </label>
+    </form>
+  )
+};
+
 //This component takes in a number from the user. This number is than passed to /api/spacex-api-req-history.js end point. 
 //This will than send a request to https://api.spacexdata.com/v3/launches/${id}
 function spaceXHistoricalApiComp() {
@@ -142,6 +183,7 @@ export default function Home() {
       {Testing()}
       {spacexApi()}
       {spaceXHistoricalApiComp()}
+      {postOwnRocketEntryToAWS()}
     </div>
   )
 }
